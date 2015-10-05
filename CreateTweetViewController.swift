@@ -8,7 +8,9 @@
 
 import UIKit
 
-class CreateTweetViewController: UIViewController {
+
+
+class CreateTweetViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var tweetTextField: UITextView!
     @IBOutlet weak var usernameLabel: UILabel!
@@ -16,11 +18,14 @@ class CreateTweetViewController: UIViewController {
     @IBOutlet weak var profilePictureImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        tweetTextField.becomeFirstResponder()
         usernameLabel.text = User.currentUser?.screenname
         nameLabel.text = User.currentUser?.name
         profilePictureImageView.setImageWithURL(NSURL(string:(User.currentUser?.profileImageUrl)!))
+        tweetTextField.delegate = self
         // Do any additional setup after loading the view.
+        
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,8 +33,12 @@ class CreateTweetViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func cancelButtonPressed(sender: AnyObject) {
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+        let newLength = tweetTextField.text.characters.count + string.characters.count - range.length
+        return newLength <= 140 // Bool
     }
+    
+
 
     @IBAction func tweetButtonPressed(sender: AnyObject) {
         let text = tweetTextField.text as String?

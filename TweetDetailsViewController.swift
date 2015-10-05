@@ -22,7 +22,11 @@ class TweetDetailsViewController: UIViewController {
     @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var replyButton: UIButton!
     
+    @IBOutlet weak var replyTextField: UITextView!
     var tweet:Tweet!
+    @IBOutlet weak var tweetReplyButton: UIButton!
+    @IBOutlet weak var cancelReplyButton: NSLayoutConstraint!
+    @IBOutlet weak var replyView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,15 +39,19 @@ class TweetDetailsViewController: UIViewController {
         nameLabel.text = tweet.user?.name
         profilePictureImageView.setImageWithURL(NSURL(string:(tweet.user?.profileImageUrl)!))
         
+   
         if(tweet.favorited == true){
             //disable button
-            favoriteButton.enabled = false;
+            favoriteButton.setImage(UIImage(named: "favorite_on"), forState:  UIControlState.Normal)
         }
         
         if(tweet.retweeted == true){
             //disable button
-            retweetButton.enabled = false;
+            favoriteButton.setImage(UIImage(named: "retweet_on"), forState:  UIControlState.Normal)
         }
+        
+        replyView.hidden = true
+        
 
         // Do any additional setup after loading the view.
     }
@@ -54,25 +62,56 @@ class TweetDetailsViewController: UIViewController {
     }
     
     @IBAction func onReplyPressed(sender: AnyObject) {
-        var newText = "Test Reply" as String
-        TwitterClient.sharedInstance.postReply(newText, tweetID: tweet.id!) { (tweet, error) -> () in
-            print("successfully replied")
-        }
+        replyView.hidden = false
+        replyButton.enabled = false
+        replyTextField.text = tweet.user!.screenname!
     }
     
+    
     @IBAction func onRetweetPressed(sender: AnyObject) {
-        TwitterClient.sharedInstance.postRetweet(tweet.id!) { (tweet, error) -> () in
-            print("retweeted successfully")
-            self.retweetButton.enabled = false
+        //if I haven't retweeted
+        if(tweet.retweeted == false){
+            TwitterClient.sharedInstance.postRetweet(tweet.id!) { (tweet, error) -> () in
+                if(error == nil){
+                    print("retweeted successfully")
+
+                }
+            }
+            retweetButton.setImage(UIImage(named: "retweet_on"), forState:  UIControlState.Normal)
+            tweet?.augmentRetweets()
+            numRetweetsLabel.text = tweet.retweetCount
+       
         }
+        //to unretweet
     }
 
     @IBAction func onFavoritePressed(sender: AnyObject) {
-        TwitterClient.sharedInstance.postFavorite(tweet.id!) { (tweet, error) -> () in
-            print("favorited successfully")
-            self.favoriteButton.enabled = false
-            
+        //to favorite
+        if(tweet.favorited == false){
+            TwitterClient.sharedInstance.postFavorite(tweet.id!) { (tweet, error) -> () in
+                if(error == nil){
+                    print("favorited successfully")
+                }
+                
+            }
+            favoriteButton.setImage(UIImage(named: "favorite_on"), forState:  UIControlState.Normal)
+            tweet?.augmentFavorites()
+            numFavoritesLabel.text = tweet.favoriteCount
+   
         }
+        //to unfavorite
+    }
+    @IBAction func onReplyCancelled(sender: AnyObject) {
+        replyView.hidden = true
+        replyButton.enabled = true
+    }
+    @IBAction func onTweetReplyPosted(sender: AnyObject) {
+        var newText = replyTextField.text 
+        TwitterClient.sharedInstance.postReply(newText, tweetID: tweet.id!) { (tweet, error) -> () in
+            print("successfully replied")
+        }
+        replyView.hidden = true
+        replyButton.enabled = true
     }
     /*
     // MARK: - Navigation

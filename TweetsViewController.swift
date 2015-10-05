@@ -31,6 +31,8 @@ class TweetsViewController: UIViewController,  UITableViewDataSource, UITableVie
         dummyTableVC.tableView = tableView
         dummyTableVC.refreshControl = refreshControl
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "fetchTweets", name: newTweetCreated, object: nil)
+        
         fetchTweets()
         
     }
@@ -40,6 +42,7 @@ class TweetsViewController: UIViewController,  UITableViewDataSource, UITableVie
             dispatch_async(dispatch_get_main_queue(), {
                 self.tweets = tweets
                 self.tableView.reloadData()
+                self.refreshControl.endRefreshing()
             })
             
         })

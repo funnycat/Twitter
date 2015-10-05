@@ -12,6 +12,8 @@ let twitterConsumerKey = "SNrvKsvgYm7wCA8iN5Pusizoq"
 let twitterConsumerSecret = "cDqAiSDZd0YotzuwsOSKaxU0ujLNeVqE9AqXRhr2JExwvfTKp3"
 let twitterBaseURL = NSURL(string: "https://api.twitter.com")
 
+let newTweetCreated = "newTweetCreated"
+
 class TwitterClient: BDBOAuth1RequestOperationManager {
 
     var loginCompletion:((user:User?, error:NSError?)->())?
@@ -51,6 +53,7 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         
         POST("/1.1/statuses/update.json", parameters: paramDictionary, success: { (operation:AFHTTPRequestOperation!, response:AnyObject!)-> Void in
                 print("success posting new tweet tweet tweet")
+                NSNotificationCenter.defaultCenter().postNotificationName(newTweetCreated, object: nil)
             
             }, failure: { (operation:AFHTTPRequestOperation!, error:NSError!) -> Void in
                 print("error posting new tweet")

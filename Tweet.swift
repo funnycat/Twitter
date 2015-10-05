@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class Tweet: NSObject {
     
     var user: User?
@@ -34,7 +35,40 @@ class Tweet: NSObject {
         var format = NSDateFormatter()
         format.dateFormat = "EEE MMM d HH:mm:ss Z y"
         createdAt = format.dateFromString(createdAtString!)
+              
+    }
+    
+    func augmentFavorites(){
+        var favoriteNum = Int(favoriteCount!)
+        favoriteNum = favoriteNum!+1
+        favoriteCount = String(favoriteNum!)
+        favorited = true;
         
+    }
+    
+    func decrementFavorites(){
+        var favoriteNum = Int(favoriteCount!)
+        if(favoriteNum>0){
+            favoriteNum = favoriteNum!-1
+        }
+        favoriteCount = String(favoriteNum!)
+        favorited = false;
+    }
+    
+    func augmentRetweets(){
+        var retweetNum = Int(retweetCount!)
+        retweetNum = retweetNum!+1
+        retweetCount = String(retweetNum!)
+        retweeted = true;
+    }
+    
+    func decrementRetweets(){
+        var retweetNum = Int(retweetCount!)
+        if(retweetNum>0){
+            retweetNum = retweetNum!-1
+        }
+        retweetCount = String(retweetNum!)
+        retweeted = false;
     }
     
     class func tweetsWithArray(array:[NSDictionary]) -> [Tweet]{
