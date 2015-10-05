@@ -54,7 +54,10 @@ class TweetDetailsViewController: UIViewController {
     }
     
     @IBAction func onReplyPressed(sender: AnyObject) {
-
+        var newText = "Test Reply" as String
+        TwitterClient.sharedInstance.postReply(newText, tweetID: tweet.id!) { (tweet, error) -> () in
+            print("successfully replied")
+        }
     }
     
     @IBAction func onRetweetPressed(sender: AnyObject) {
